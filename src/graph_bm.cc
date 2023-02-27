@@ -414,13 +414,13 @@ main ( int argc, char *argv[] )
 	 for (int i = 0; i < 50; i++) {
 		 for (int j = 0; j < 100; j++) {
         uint32_t y = rand()%num_nodesPMA;
-        //printf("adding edge (%u, %u\n", i, y);
+        printf("adding edge (%u, %u\n", i, y);
 			 pma.add_edge(i,y,1);
-       //pma.print_array();
+       pma.print_array();
        if (rand()%5 == 0) {
-        //printf("removing edge (%u, %u\n", i, y);
+        printf("removing edge (%u, %u\n", i, y);
         pma.remove_edge(i,y);
-        //pma.print_array();
+        pma.print_array();
        }
 		 }
 	 }

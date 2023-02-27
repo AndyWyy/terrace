@@ -19,9 +19,11 @@ ifdef P
 	PROFILE=-pg -no-pie # for bug in gprof.
 endif
 
-CXX = clang++ -std=c++17
-CC = clang -std=gnu11
-LD= clang++ -std=c++17
+OPENCILK_DIR = /opt/opencilk/bin
+
+CXX = $(OPENCILK_DIR)/clang++ -std=c++17
+CC = $(OPENCILK_DIR)/clang -std=gnu11
+LD= $(OPENCILK_DIR)/clang++ -std=c++17
 
 LOC_INCLUDE=include
 LOC_LIB=lib
