@@ -25,6 +25,7 @@
 #include "partitioned_counter.h"
 #include "btree.h"
 #include "BitArray.h"
+#include "sys/time.h"
 //#include "cpp-btree/btree_set.h"
 
 namespace graphstore {
@@ -381,7 +382,6 @@ static inline void unlock(uint32_t *data)
 #endif
 		vertex s = srcs[parts[i]];
 		std::pair<uint32_t, uint32_t> range = {parts[i], parts[i+1]};
-
 #if ENABLE_LOCK
 		lock(&vertices[s].degree);
 #endif
@@ -454,6 +454,11 @@ static inline void unlock(uint32_t *data)
 		//BitArray array_btree_node(parts.size());
 		uint8_t *array_btree_node = (uint8_t*)calloc(parts.size(), sizeof(uint8_t));
 
+    struct timeval start, end;
+    struct timezone tzp;
+
+    printf("starting to insert items to cache line\n");
+    gettimeofday(&start, &tzp);
 		// try and add edges in place and store overflow edges in sec_list
 		parallel_for (uint32_t i = 0; i < parts.size()-1; i++) {
 #if WEIGHTED
@@ -464,8 +469,14 @@ static inline void unlock(uint32_t *data)
 									array_btree_node);
 #endif
 		}
+    gettimeofday(&end, &tzp);
+    print_time_elapsed("CacheLine Inplace Time: ", &start, &end);
+    printf("done with cache line\n");
     printf("starting to insert items to pma\n");
-		// insert edges from the sec list to PMA
+
+    gettimeofday(&start, &tzp);
+
+    // insert edges from the sec list to PMA
 		parallel_for (uint32_t i = 0; i < edge_count; i++) {
 			//auto idx = i;
 			auto idx = perm[i];
@@ -487,10 +498,15 @@ static inline void unlock(uint32_t *data)
 #endif
 			}
 		}
+    gettimeofday(&end, &tzp);
+    print_time_elapsed("PMA Insert Time:", &start, &end);
+
     printf("done with pma\n");
 		
 		// insert edges from sec list to b-tree 
-		parallel_for (uint32_t i = 0; i < parts.size()-1; i++) {
+    printf("starting to insert items to btree\n");
+    gettimeofday(&start, &tzp);
+    parallel_for (uint32_t i = 0; i < parts.size()-1; i++) {
 			if (array_btree_node[i] == 1) {
 #if WEIGHTED
 				add_btree(srcs, dests, wghts, i, parts, array_btree);
@@ -499,7 +515,10 @@ static inline void unlock(uint32_t *data)
 #endif
 			}
 		}
-	}
+    gettimeofday(&end, &tzp);
+    print_time_elapsed("Btree Insert Time:", &start, &end);
+    printf("done with btree\n");
+  }
 
 #if WEIGHTED
   int Graph::add_edge(const vertex s, const vertex d, const weight w) {

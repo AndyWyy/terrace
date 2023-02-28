@@ -32,3 +32,5 @@
 *.app
 graph_bm
 graph_bm_no_update
+data/soc-LiveJournal1.txt
+log16
