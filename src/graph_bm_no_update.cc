@@ -320,7 +320,7 @@ void run_algorithm(commandLine& P) {
  */
 int main(int argc, char** argv) {
   srand(time(NULL));
-  setWorkers(16);
+  //setWorkers(16);
   printf("Num workers: %ld\n", getWorkers());
   commandLine P(argc, argv, "./graph_bm [-t testname -r rounds -f file");
   run_algorithm(P);
