@@ -30,7 +30,7 @@ LOC_LIB=lib
 LOC_SRC=src
 OBJDIR=obj
 SER=ser
-#CILK=1
+CILK=1
 
 CXXFLAGS += -Wall $(DEBUG) -g $(PROFILE) $(OPT) $(ARCH) -DOPENMP=$(OPENMP) -DCILK=$(CILK) -m64 -I. -I$(LOC_INCLUDE)
 
